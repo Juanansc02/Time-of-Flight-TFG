@@ -24,4 +24,134 @@ def visualize_environment():
     plt.ylabel('Y')
     plt.show()
 
-visualize_environment()
+#visualize_environment()
+
+def determine_distance(robot_position, square_height, square_lenght):
+    
+    distance = []
+    alpha = 0
+    radians = math.radians(alpha)
+
+    #First Quadrant
+    while (square_lenght > robot_position[0] + (square_height-robot_position[1])*math.tan(radians)):
+        H = (square_height - robot_position[1]) / math.cos(radians)
+        distance.append(H)
+        alpha = (alpha + added_angle) % 360
+        radians = math.radians(alpha)
+    
+    beta = 90 - alpha
+    radians = math.radians(beta)
+
+    while (beta > 0):
+        H = (square_lenght - robot_position[0]) / math.cos(radians)
+        distance.append(H)
+        alpha = (alpha + added_angle) % 360
+        beta = 90 - alpha
+        radians = math.radians(beta)
+    
+    #Fourth Quadrant
+    alpha = 0
+    radians = math.radians(alpha)
+    
+    while (robot_position[1] - (square_lenght-robot_position[0])*math.tan(radians) > 0):
+        H = (square_lenght-robot_position[0]) / math.cos(radians)
+        distance.append(H)
+        alpha = (alpha + added_angle) % 360
+        radians = math.radians(alpha)
+    
+    beta = 90 - alpha
+    radians = math.radians(beta)
+
+    while (beta > 0):
+        H = (robot_position[1]) / math.cos(radians)
+        distance.append(H)
+        alpha = (alpha + added_angle) % 360
+        beta = 90 - alpha
+        radians = math.radians(beta)
+
+    #Third Quadrant
+    alpha = 0
+    radians = math.radians(alpha)
+
+    while (robot_position[0] - (robot_position[1])*math.tan(radians) > 0):
+        H = (robot_position[1]) / math.cos(radians)
+        distance.append(H)
+        alpha = (alpha + added_angle) % 360
+        radians = math.radians(alpha)
+    
+    beta = 90 - alpha
+    radians = math.radians(beta)
+
+    while (beta > 0):
+        H = (robot_position[0]) / math.cos(radians)
+        distance.append(H)
+        alpha = (alpha + added_angle) % 360
+        beta = 90 - alpha
+        radians = math.radians(beta)
+
+    #Second Quadrant
+    alpha = 0
+    radians = math.radians(alpha)
+    
+    while (square_height > robot_position[1] + (robot_position[0])*math.tan(radians)):
+        H = (robot_position[0]) / math.cos(radians)
+        distance.append(H)
+        alpha = (alpha + added_angle) % 360
+        radians = math.radians(alpha)
+    
+    beta = 90 - alpha
+    radians = math.radians(beta)
+
+    while (beta > 0):
+        H = (square_height - robot_position[1]) / math.cos(radians)
+        distance.append(H)
+        alpha = (alpha + added_angle) % 360
+        beta = 90 - alpha
+        radians = math.radians(beta)
+    return distance
+
+#Calculate Time of Fly for position 1 and 2:
+ToF1 = determine_distance(robot_position1, square_height, square_lenght)
+ToF2 = determine_distance(robot_position2, square_height, square_lenght)
+rounded_ToF1 = [round(valor1, 2) for valor1 in ToF1]
+rounded_ToF2 = [round(valor2, 2) for valor2 in ToF2]
+
+#Second position of the robot is re-oriented to consider orientation
+#displacement = randint(0, samples)
+displacement = 30
+ToF2_displaced = ToF2[displacement:] + ToF2[:displacement]
+rounded_ToF2_displaced = [round(valor, 2) for valor in ToF2_displaced]
+
+#Starting the algorithm:
+
+#Distance traveled by the robot
+distance_traveled = math.sqrt(math.pow(abs(robot_position2[0]-robot_position1[0]), 2) + math.pow(abs(robot_position2[1]-robot_position1[1]), 2))
+#print(f"The distance traveled by the robot is {round(distance_traveled, 2)}m")
+
+#Graphic representation of ToF points in graphic:
+def represent_figure(ToF1, ToF2):
+    angles = [math.radians(i * added_angle) for i in range(len(ToF1))]
+    
+    #Define the points that need to be graphicated:
+    coordinates1 = [[ToF1[i] * math.sin(angles[i]), 
+                          ToF1[i] * math.cos(angles[i])] for i in range(0, len(ToF1))]
+    coordinates2 = [[ToF2[j]*math.sin(angles[j]), 
+                          ToF2[j]*math.cos(angles[j])] for j in range(0, len(ToF2))]
+    
+    plt.plot(0, 0, 'bo')
+
+    plt.plot([coordinates1[i][0] for i in range(0, len(ToF1))], 
+             [coordinates1[i][1] for i in range(0, len(ToF1))], 'ro')
+    plt.plot([coordinates2[i][0] for i in range(0, len(ToF2))], 
+             [coordinates2[i][1] for i in range(0, len(ToF2))], 'go')
+    #plt.plot((0, 0, 8, 8, 0), (0, 5, 5, 0, 0), 'b-')
+
+    plt.title('Detected environment')
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.grid(True)
+    plt.gca().set_aspect('equal')
+    plt.show()
+    
+
+represent_figure(rounded_ToF1, rounded_ToF2_displaced)    
