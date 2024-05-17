@@ -201,7 +201,7 @@ def mass_center_substraction(ToF1, ToF2):
     plt.plot([square_centered2[i][0] for i in range(0, len(ToF2))], 
              [square_centered2[i][1] for i in range(0, len(ToF2))], 'g-')
     #plt.plot((0, 0, 8, 8, 0), (0, 5, 5, 0, 0), 'b-')
-    print(initial_coordinates1)
+    #print(initial_coordinates1)
     plt.title('Detected environment')
     plt.xlabel('X')
     plt.ylabel('Y')
