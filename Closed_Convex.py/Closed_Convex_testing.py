@@ -99,4 +99,36 @@ def mass_center_substraction(ToF1, ToF2):
 
 figure1_matrix, figure2_matrix, mass_center1, mass_center2 = mass_center_substraction(ToF1_vector, ToF2_vector)
 
-reconstruct_figure_from_matrix(figure1_matrix, figure2_matrix)
+#reconstruct_figure_from_matrix(figure1_matrix, figure2_matrix)
+
+def interpolate_points(points):
+    # Determining minimum distance between points
+    distances = [np.linalg.norm(np.array(points[i]) - np.array(points[i+1])) for i in range(len(points)-1)]
+    minimum_distance = min(distances)
+    
+    interpolated_points = [points[0]]  
+    for i in range(len(points) - 1):
+        point1 = points[i]
+        point2 = points[i + 1]
+        # Distance between points
+        actual_distance = np.linalg.norm(np.array(point2) - np.array(point1))
+        
+        # Number of interpolations between points
+        num_interpolated_points = int(actual_distance / minimum_distance) - 1
+        
+        for j in range(1, num_interpolated_points + 1):
+            t = j / (num_interpolated_points + 1)
+            x_interpolated = point1[0] + t * (point2[0] - point1[0])
+            y_interpolated = point1[1] + t * (point2[1] - point1[1])
+            interpolated_points.append((x_interpolated, y_interpolated))
+        
+        # Add real points to maintain the data from the initial ToF vector
+        interpolated_points.append(point2)
+    
+    return interpolated_points
+
+"""Interpolate both matrix and fulfill them with points"""
+figure1_interpolated = interpolate_points(figure1_matrix)
+figure2_interpolated = interpolate_points(figure2_matrix)
+
+reconstruct_figure_from_matrix(figure1_interpolated, figure2_interpolated)
