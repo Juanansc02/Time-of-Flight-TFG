@@ -122,3 +122,39 @@ def reduce_points(points, step=3): #   (number of points) / step = new number of
     #if reduced_points[-1] != points[-1]:
     #    reduced_points.append(points[-1])
     return points[::step]
+
+
+def calculate_orientation_angle(figure1, figure2):
+    long = len(figure2) #Because is the figure we are going to rotate
+    angle = 360 / long
+    rotation_angle = []
+    #min_correlation_value = float('inf')
+    min_correlation_value = []
+    for i in range(0, len(figure2)):
+        actual_correlation_value = correlation(figure1, figure2)
+        min_correlation_value.append((actual_correlation_value, angle*i))
+        figure2 = rotate_matrix(figure2, -(angle*(2*np.pi)/360))
+    for j in range(0, len(figure2)):
+        if (min_correlation_value[j][0] < min_correlation_value[(j+1)%len(figure2)][0] and min_correlation_value[j][0] < min_correlation_value[(j-1)%len(figure2)][0]):
+            rotation_angle.append(min_correlation_value[j][1])
+    return rotation_angle
+
+figure1_interpolated_reduced = reduce_points(figure1_interpolated)
+figure2_interpolated_reduced = reduce_points(figure2_interpolated)
+
+final_rotation_angle = calculate_orientation_angle(figure1_interpolated_reduced, figure2_interpolated_reduced)
+min_rot_angle = float('inf')
+final_angle = 0
+
+for i in range(0, len(final_rotation_angle)):
+    if (final_rotation_angle[i] - theorical_angle) < min_rot_angle:
+        final_angle = final_rotation_angle[i]
+        min_rot_angle = final_rotation_angle[i] - theorical_angle
+figure2_final = rotate_matrix(figure2_interpolated_reduced, -final_angle*(2*np.pi)/360)
+
+print(f"The theorical displacement was {theorical_angle} and the final rotation angle is {final_angle}")
+
+mass_center2_rotated = rotate_single_point(mass_center2[0], mass_center2[1], (90-final_angle))
+practical_distance = ((mass_center1[0] - mass_center2_rotated[0])**2 + (mass_center1[1] - mass_center2_rotated[1])**2)**0.5
+
+print(f"The theorical distance is {theorical_distance}, the real distance calculated is {practical_distance}")
