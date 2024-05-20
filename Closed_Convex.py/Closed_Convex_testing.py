@@ -131,4 +131,57 @@ def interpolate_points(points):
 figure1_interpolated = interpolate_points(figure1_matrix)
 figure2_interpolated = interpolate_points(figure2_matrix)
 
-reconstruct_figure_from_matrix(figure1_interpolated, figure2_interpolated)
+#reconstruct_figure_from_matrix(figure1_interpolated, figure2_interpolated)
+
+"""The idea is to calculate the minimum distance from every point of figure1 to every point in figure2 and calculate the minimum. """
+def correlation(figure1, figure2):
+    correlation_value = 0
+    for (x1, y1) in figure1:
+        min_distance = float('inf')
+        for (x2, y2) in figure2:
+            distance_square = ((x2-x1)**2 + (y2-y1)**2) # To optimize the algorithm, the square root is not done --> minimum d**0.5 = minimum d
+            if distance_square < min_distance:
+                min_distance = distance_square
+        correlation_value += min_distance
+    return correlation_value
+
+#rotate_matrix function shall be implemented to guarantee that the code can be implemented in C
+def rotate_matrix(matrix, theta):
+    cos_theta, sin_theta = np.cos(theta), np.sin(theta)
+    rotated_matrix = []
+    for (x, y) in matrix:
+        x_rot = x * cos_theta - y * sin_theta
+        y_rot = x * sin_theta + y * cos_theta
+        rotated_matrix.append((x_rot, y_rot))
+    return rotated_matrix
+
+def rotate_single_point(x, y, theta):
+    cos_theta, sin_theta = math.cos(theta), math.sin(theta)
+    x_rot = x * cos_theta - y * sin_theta
+    y_rot = x * sin_theta + y * cos_theta
+    return (x_rot, y_rot)
+
+def reduce_points(points, step=3):
+    reduced_points = points[::step]
+    # Ensure the figure is completed 
+    if reduced_points[-1] != points[-1]:
+        reduced_points.append(points[-1])
+    return reduced_points
+
+def calculate_orientation_angle(figure1, figure2):
+    long = len(figure2) #Because is the figure we are going to rotate
+    angle = 360 / long
+    rotation_angle = []
+    #min_correlation_value = float('inf')
+    min_correlation_value = []
+    for i in range(0, len(figure2)):
+        actual_correlation_value = correlation(figure1, figure2)
+        min_correlation_value.append((actual_correlation_value, angle*i))
+        figure2 = rotate_matrix(figure2, -(angle*(2*np.pi)/360))
+    for j in range(0, len(figure2)):
+        if (min_correlation_value[j][0] < min_correlation_value[(j+1)%len(figure2)][0] and min_correlation_value[j][0] < min_correlation_value[(j-1)%len(figure2)][0]):
+            rotation_angle.append(min_correlation_value[j][1])
+    return rotation_angle
+
+figure1_interpolated_reduced = reduce_points(figure1_interpolated)
+figure2_interpolated_reduced = reduce_points(figure2_interpolated)
