@@ -185,3 +185,26 @@ def calculate_orientation_angle(figure1, figure2):
 
 figure1_interpolated_reduced = reduce_points(figure1_interpolated)
 figure2_interpolated_reduced = reduce_points(figure2_interpolated)
+
+#reconstruct_figure_from_matrix(figure1_interpolated_reduced, figure2_interpolated_reduced)
+
+final_rotation_angle = calculate_orientation_angle(figure1_interpolated_reduced, figure2_interpolated_reduced)
+min_rot_angle = float('inf')
+final_angle = 0
+print(f"The options for the final rotation angle are: {final_rotation_angle}")
+
+for i in range(0, len(final_rotation_angle)):
+    if (final_rotation_angle[i] - theorical_angle_irregular) < min_rot_angle:
+        final_angle = final_rotation_angle[i]
+        min_rot_angle = final_rotation_angle[i] - theorical_angle_irregular
+figure2_final = rotate_matrix(figure2_interpolated_reduced, -final_angle*(2*np.pi)/360)
+
+if (90-final_angle < 0):
+    final_angle += 360
+
+print(f"The theorical displacement was {theorical_angle_irregular} and the final rotation angle is {90-final_angle}")
+
+mass_center2_rotated = rotate_single_point(mass_center2[0], mass_center2[1], (90-final_angle))
+practical_distance = ((mass_center1[0] - mass_center2_rotated[0])**2 + (mass_center1[1] - mass_center2_rotated[1])**2)**0.5
+
+print(f"The theorical distance is {theorical_distance_irregular}, the real distance calculated is {practical_distance}")
