@@ -9,3 +9,6 @@ In the testing script, there are 4 vectors with "manual" values. These vectors a
 Initially, the tests were done creating the ToF vectors with the representing_environment module, but once the tests were done, the final script shows the results with the practical values.
 
 The final implementation is done with real values (once for the square environment and one for the irregular figure) and tested. The final results are accurated and the error percentatge are commited in the final report of the TFG.
+
+Finally, in the Open Convex case, the same functions as the closed case are used, with the difference that we have to select the points that we want to use for the algorithm. 
+These points are the ones that share both figures. 

@@ -153,7 +153,6 @@ def represent_figure(ToF1, ToF2):
     plt.gca().set_aspect('equal')
     plt.show()
     
-
 #represent_figure(rounded_ToF1, rounded_ToF2_displaced)
 
 #Once the figure is represented, the MASS CENTER shall be calculated to obtain a reference
